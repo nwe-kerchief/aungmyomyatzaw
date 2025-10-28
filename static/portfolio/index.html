@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMMZ - Developer Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="stylesheet" href="/static/portfolio/style.css">
+</head>
+<body>
+
+  <!-- Cursor -->
+  <div class="custom-cursor"></div>
+  <div class="cursor-dot"></div>
+
+  <!-- Background -->
+  <canvas id="canvas-3d"></canvas>
+  <div class="burmese-layer" id="burmese-layer"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <canvas id="loading-canvas"></canvas>
+    <div class="loading-content">
+      <div class="loading-logo">AMMZ</div>
+
+      <div id="lang-selector">
+        <div style="font-size: clamp(0.9rem, 2vw, 1.2rem); color: #0f0; margin-bottom: 1rem;">
+          Select Language / <span style="font-family: 'Padauk', sans-serif;">ဘာသာစကားရွေးချယ်ပါ</span>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <button class="lang-btn" onclick="selectLanguage('en')">
+            🇬🇧 English
+          </button>
+          <button class="lang-btn" onclick="selectLanguage('mm')" style="font-family: 'Padauk', sans-serif;">
+            🇲🇲 မြန်မာ
+          </button>
+        </div>
+      </div>
+
+      <div id="loading-progress" style="display: none;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-bar"></div>
+        </div>
+        <div id="loading-text" style="margin-top: 1rem; color: #0f0; font-size: clamp(0.8rem, 2vw, 0.9rem);">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-compass">
+    <div></div>
+    <div class="nav-arrow" data-direction="up">↑</div>
+    <div></div>
+    <div class="nav-arrow" data-direction="left">←</div>
+    <div class="nav-arrow" style="background: rgba(0, 255, 0, 0.2);">🏠</div>
+    <div class="nav-arrow" data-direction="right">→</div>
+    <div></div>
+    <div class="nav-arrow" data-direction="down">↓</div>
+    <div></div>
+  </div>
+
+  <!-- Sections Container -->
+  <div class="sections-container" id="sections-container">
+    
+    <!-- HOME -->
+    <section class="section" id="home">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~$</span> whoami</div>
+          <div style="margin: 1.5rem 0; font-size: clamp(1.5rem, 5vw, 3rem); text-shadow: 0 0 30px #0f0; font-weight: 900;">AUNG MYO MYAT ZAW</div>
+          
+          <div><span class="prompt">root@ammz:~$</span> cat greeting.txt</div>
+          <div style="margin: 1rem 0;">
+            <span class="string">"<span style="font-family: 'Padauk', sans-serif;">မင်္ဂလာပါ</span>"</span> <span class="comment"># Hello in Burmese</span><br>
+            <span class="comment"># Full-Stack Developer from Myanmar 🇲🇲</span><br>
+            <span class="comment"># Age: 23 | Born: Dec 12, 2002</span>
+          </div>
+
+          <div><span class="prompt">root@ammz:~$</span> ls -la</div>
+          <div style="margin: 1rem 0;">
+            <span class="function">drwxr-xr-x</span> about_experience/<br>
+            <span class="function">drwxr-xr-x</span> contact/<br>
+            <span class="function">drwxr-xr-x</span> certificates/<br>
+            <span class="function">drwxr-xr-x</span> projects/<br>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT & EXPERIENCE -->
+    <section class="section" id="about-exp">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/about_experience$</span> ls -la</div>
+          
+          <div style="margin: 1.5rem 0;">
+            <div class="cmd-button" onclick="showAbout()">./show_about.sh</div>
+            <div class="cmd-button" onclick="showExperience()">./show_experience.sh</div>
+          </div>
+
+          <div id="about-content" style="display: none; margin-top: 1.5rem;">
+            <div><span class="prompt">root@ammz:~/about_experience$</span> ./show_about.sh</div>
+            <pre style="margin-top: 1rem;">
+<span class="keyword">class</span> Developer:
+    <span class="keyword">def</span> __init__(self):
+        self.name = <span class="string">"Aung Myo Myat Zaw"</span>
+        self.age = <span class="string">23</span>
+        self.born = <span class="string">"December 12, 2002"</span>
+        self.location = <span class="string">"Myanmar"</span>
+        self.role = <span class="string">"Full-Stack Developer"</span>
+        
+    <span class="keyword">def</span> get_story(self):
+        <span class="keyword">return</span> <span class="string">"""
+        Started tech journey at age 14 (2016)
+        Learned HTML, CSS, coding on mobile
+        Now building real-world solutions
+        Passionate about practical development
+        """</span>
+            </pre>
+          </div>
+
+          <div id="experience-content" style="display: none; margin-top: 1.5rem;">
+            <div><span class="prompt">root@ammz:~/about_experience$</span> ./show_experience.sh</div>
+            <div style="margin-top: 1rem;">
+              <div style="margin-bottom: 1.5rem;">
+                <span class="function">$ cat timeline.log</span><br><br>
+                <span class="string">2016 (Age 14):</span> Started freelancing in social media & IT<br>
+                <span class="comment"># Learned HTML/CSS on mobile without laptop</span><br>
+                <span class="comment"># Explored cybersecurity (now reformed)</span><br><br>
+                
+                <span class="string">2020-2021:</span> Took break during COVID & Myanmar crisis<br>
+                <span class="comment"># Paused studies at Sagaing Technological University</span><br><br>
+                
+                <span class="string">Dec 2024:</span> Returned to coding<br>
+                <span class="comment"># Relearned programming</span><br><br>
+                
+                <span class="string">2025 (Now):</span> Active development<br>
+                <span class="comment"># Built temp email service & Telegram bot</span><br>
+                <span class="comment"># Focused on practical solutions</span>
+              </div>
+              <div>
+                <span class="comment"># Current Skills</span><br>
+                Python/Flask ████████████ 90%<br>
+                JavaScript ███████████ 85%<br>
+                PostgreSQL ████████ 80%<br>
+                HTML/CSS ███████████ 85%
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~/about_experience$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/contact$</span> cat contact_info.json</div>
+          <pre style="margin-top: 1.5rem;">
+{
+  <span class="string">"name"</span>: <span class="string">"Aung Myo Myat Zaw"</span>,
+  <span class="string">"location"</span>: <span class="string">"Myanmar 🇲🇲"</span>,
+  <span class="string">"age"</span>: <span class="string">23</span>,
+  <span class="string">"email"</span>: <span class="string">"your@email.com"</span>,
+  <span class="string">"github"</span>: <span class="string">"github.com/yourusername"</span>,
+  <span class="string">"facebook"</span>: <span class="string">"facebook.com/yourprofile"</span>,
+  <span class="string">"telegram"</span>: <span class="string">"@yourusername"</span>,
+  <span class="string">"status"</span>: <span class="string">"🟢 Available for projects"</span>
+}
+          </pre>
+
+          <div style="margin-top: 2rem;">
+            <a href="mailto:your@email.com" class="cmd-button">📧 Email</a>
+            <a href="https://github.com/yourusername" target="_blank" class="cmd-button">💻 GitHub</a>
+            <a href="https://facebook.com/yourprofile" target="_blank" class="cmd-button">👤 Facebook</a>
+            <a href="https://t.me/yourusername" target="_blank" class="cmd-button">📱 Telegram</a>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~/contact$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATES -->
+    <section class="section" id="certificates">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/certificates$</span> ls -la</div>
+          
+          <div class="cert-gallery">
+            <div class="cert-card">
+              <div class="cert-icon">🎓</div>
+              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Python Developer</div>
+              <div style="color: #0f08; font-size: 0.85rem;">Self-Taught</div>
+            </div>
+
+            <div class="cert-card">
+              <div class="cert-icon">📜</div>
+              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Web Development</div>
+              <div style="color: #0f08; font-size: 0.85rem;">Since 2016</div>
+            </div>
+
+            <div class="cert-card">
+              <div class="cert-icon">🏆</div>
+              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Database Design</div>
+              <div style="color: #0f08; font-size: 0.85rem;">PostgreSQL</div>
+            </div>
+
+            <div class="cert-card">
+              <div class="cert-icon">⭐</div>
+              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Flask Backend</div>
+              <div style="color: #0f08; font-size: 0.85rem;">2025</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~/certificates$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS PAGE -->
+    <section class="section" id="projects">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/projects$</span> ls -la</div>
+          <div style="margin: 1.5rem 0;">
+            <span class="function">drwxr-xr-x</span> 01_tempmail_service/<br>
+            <span class="function">drwxr-xr-x</span> 02_telegram_video_bot/<br>
+            <span class="comment">drwxr-xr-x</span> 03_coming_soon/ <span class="comment"># In development</span>
+          </div>
+
+          <div><span class="prompt">root@ammz:~/projects$</span> <span class="comment"># Scroll right → to view projects</span></div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~/projects$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT 1: TEMPMAIL -->
+    <section class="section" id="project-1">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/projects/01_tempmail$</span> cat README.md</div>
+          
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 1rem;">📧 Temporary Email Service</div>
+            <p style="line-height: 1.8; color: #0f08;">
+              Anonymous temporary email with real-time inbox, admin panel, and PostgreSQL backend.
+              Built from scratch with Flask and modern web technologies.
+            </p>
+          </div>
+
+          <div style="margin: 1rem 0;">
+            <span class="keyword">Tech Stack:</span><br>
+            • Python + Flask<br>
+            • PostgreSQL + psycopg2<br>
+            • JavaScript + WebSockets<br>
+            • Cloudflare + Render.com
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <a href="/tempmail" class="cmd-button">🚀 Launch Demo</a>
+            <a href="#" class="cmd-button">📂 View Code</a>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <span class="prompt">root@ammz:~/projects/01_tempmail$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECT 2: TELEGRAM BOT -->
+    <section class="section" id="project-2">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/projects/02_telegram_bot$</span> cat README.md</div>
+          
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 1rem;">🤖 Telegram Video Downloader</div>
+            <p style="line-height: 1.8; color: #0f08;">
+              Download YouTube & TikTok videos without watermark directly through Telegram.
+              Serverless deployment on AWS Lambda for high availability.
+            </p>
+          </div>
+
+          <div style="margin: 1rem 0;">
+            <span class="keyword">Tech Stack:</span><br>
+            • Python<br>
+            • AWS Lambda (Serverless)<br>
+            • Telegram Bot API<br>
+            • yt-dlp
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <a href="#" class="cmd-button">🤖 Try Bot</a>
+            <a href="#" class="cmd-button">📂 View Code</a>
+          </div>
+
+          <div style="margin-top: 1rem;">
+            <span class="prompt">root@ammz:~/projects/02_telegram_bot$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMING SOON -->
+    <section class="section" id="coming-soon">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+          <div class="terminal-btn"></div>
+        </div>
+        <div class="code-block">
+          <div><span class="prompt">root@ammz:~/projects/03_coming_soon$</span> cat status.txt</div>
+          
+          <div style="margin: 2rem 0; text-align: center;">
+            <div style="font-size: clamp(3rem, 8vw, 4rem); margin-bottom: 1rem;">🚧</div>
+            <div style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem;">Under Development</div>
+            <p style="line-height: 1.8; color: #0f08;">
+              New exciting project in the works!<br>
+              Stay tuned for updates...
+            </p>
+          </div>
+
+          <div style="margin-top: 2rem; text-align: center;">
+            <span class="comment"># Building something awesome</span>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <span class="prompt">root@ammz:~/projects/03_coming_soon$</span> <span class="typing-cursor"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- JAVASCRIPT -->
+  <script src="/static/portfolio/portfolio.js"></script>
+</body>
+</html>
