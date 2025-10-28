@@ -853,7 +853,7 @@ def proxy_to_lambda():
         response = requests.post(
             LAMBDA_API_URL,
             json=data,
-            timeout=60  # Render handles longer timeouts than Netlify
+            timeout=300  # Render handles longer timeouts than Netlify
         )
         
         logger.info(f"📤 Lambda response status: {response.status_code}")
@@ -2606,4 +2606,5 @@ create_indexes_if_needed()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_ENV') == 'development'
+
     app.run(host='0.0.0.0', port=port, debug=debug)
