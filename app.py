@@ -809,9 +809,16 @@ def after_request(response):
 
 
 @app.route('/')
-def portfolio_home():
-    """Portfolio as main landing page"""
-    return send_from_directory('static/portfolio', 'index.html')
+def index():
+    """Route based on subdomain"""
+    subdomain = get_subdomain()
+    
+    if subdomain == 'tempmail':
+        # tempmail.aungmyomyatzaw.online → tempmail home
+        return send_from_directory('static/projects/tempmail', 'index.html')
+    else:
+        # aungmyomyatzaw.online → portfolio
+        return send_from_directory('static/portfolio', 'index.html')
 
 @app.route('/portfolio')
 def portfolio_redirect():
@@ -871,6 +878,13 @@ def proxy_to_lambda():
         logger.error(f"Proxy error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     
+def get_subdomain():
+    """Detect which subdomain the request is coming from"""
+    host = request.host.lower()
+    if 'tempmail.' in host:
+        return 'tempmail'
+    return 'main'
+
 
 @app.route('/projects/tempmail')
 def tempmail_home():
@@ -2608,3 +2622,4 @@ if __name__ == '__main__':
     debug = os.getenv('FLASK_ENV') == 'development'
 
     app.run(host='0.0.0.0', port=port, debug=debug)
+
