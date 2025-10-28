@@ -806,6 +806,17 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+@app.route('/<path:filename>')
+def serve_static_subdomain(filename):
+    """Serve static files based on subdomain"""
+    subdomain = get_subdomain()
+    
+    if subdomain == 'tempmail':
+        # Serve from tempmail folder on subdomain
+        return send_from_directory('static/projects/tempmail', filename)
+    else:
+        # Serve from portfolio folder on main domain
+        return send_from_directory('static/portfolio', filename)
 
 
 @app.route('/')
@@ -2622,4 +2633,5 @@ if __name__ == '__main__':
     debug = os.getenv('FLASK_ENV') == 'development'
 
     app.run(host='0.0.0.0', port=port, debug=debug)
+
 
