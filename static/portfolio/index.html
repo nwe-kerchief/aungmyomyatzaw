@@ -3,61 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AMMZ - Developer Portfolio</title>
+  <title>AMMZ - Developer Portfolio</title>  <link rel="stylesheet" href="/static/portfolio/style.css">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <link rel="stylesheet" href="/static/portfolio/style.css">
+
 </head>
 <body>
 
-  <!-- Cursor -->
   <div class="custom-cursor"></div>
   <div class="cursor-dot"></div>
 
-  <!-- Background -->
   <canvas id="canvas-3d"></canvas>
+  <canvas id="matrix-canvas"></canvas>
   <div class="burmese-layer" id="burmese-layer"></div>
+
+  <!-- Bottom Panel -->
+  <div class="bottom-panel">
+    <!-- LEFT SIDE: MINIMAP -->
+    <div class="minimap-bottom">     
+      <!-- THEN MINIMAP GRID -->
+      <div class="minimap-grid">
+        <!-- Row 1: About -->
+        <div class="minimap-cell empty"></div>
+        <div class="minimap-cell" data-pos="0,-1">📚</div>
+        <div class="minimap-cell empty"></div>
+        
+        <!-- Row 2: Main Navigation -->
+        <div class="minimap-cell" data-pos="-1,0">📧</div>
+        <div class="minimap-cell home active" data-pos="0,0">🏠</div>
+        <div class="minimap-cell" data-pos="1,0">🎓</div>
+        
+        <!-- Row 3: All Projects -->
+        <div class="minimap-row-projects">
+          <div class="minimap-cell small" data-pos="-3,1">G3</div>
+          <div class="minimap-cell small" data-pos="-2,1">G2</div>
+          <div class="minimap-cell small" data-pos="-1,1">G1</div>
+          <div class="minimap-cell small center" data-pos="0,1">HUB</div>
+          <div class="minimap-cell small" data-pos="1,1">P1</div>
+          <div class="minimap-cell small" data-pos="2,1">P2</div>
+          <div class="minimap-cell small" data-pos="3,1">P3</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE: COMPASS -->
+    <div class="nav-compass">
+      <div></div>
+      <div class="nav-arrow" data-direction="up">↑</div>
+      <div></div>
+      <div class="nav-arrow" data-direction="left">←</div>
+      <div class="nav-arrow home-btn">🏠</div>
+      <div class="nav-arrow" data-direction="right">→</div>
+      <div></div>
+      <div class="nav-arrow" data-direction="down">↓</div>
+      <div></div>
+    </div>
+  </div>
 
   <!-- Loading Screen -->
   <div id="loading-screen">
     <canvas id="loading-canvas"></canvas>
     <div class="loading-content">
       <div class="loading-logo">AMMZ</div>
-
       <div id="lang-selector">
         <div style="font-size: clamp(0.9rem, 2vw, 1.2rem); color: #0f0; margin-bottom: 1rem;">
           Select Language / <span style="font-family: 'Padauk', sans-serif;">ဘာသာစကားရွေးချယ်ပါ</span>
         </div>
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-          <button class="lang-btn" onclick="selectLanguage('en')">
-            🇬🇧 English
-          </button>
-          <button class="lang-btn" onclick="selectLanguage('mm')" style="font-family: 'Padauk', sans-serif;">
-            🇲🇲 မြန်မာ
-          </button>
+          <button class="lang-btn" onclick="selectLanguage('en')">🇬🇧 English</button>
+          <button class="lang-btn" onclick="selectLanguage('mm')" style="font-family: 'Padauk', sans-serif;">🇲🇲 မြန်မာ</button>
         </div>
       </div>
-
       <div id="loading-progress" style="display: none;">
         <div class="progress-bar">
           <div class="progress-fill" id="progress-bar"></div>
         </div>
-        <div id="loading-text" style="margin-top: 1rem; color: #0f0; font-size: clamp(0.8rem, 2vw, 0.9rem);">Loading...</div>
+        <div id="loading-text" style="margin-top: 1rem; color: #0f0;"></div>
       </div>
     </div>
-  </div>
-
-  <!-- Navigation -->
-  <div class="nav-compass">
-    <div></div>
-    <div class="nav-arrow" data-direction="up">↑</div>
-    <div></div>
-    <div class="nav-arrow" data-direction="left">←</div>
-    <div class="nav-arrow" style="background: rgba(0, 255, 0, 0.2);">🏠</div>
-    <div class="nav-arrow" data-direction="right">→</div>
-    <div></div>
-    <div class="nav-arrow" data-direction="down">↓</div>
-    <div></div>
   </div>
 
   <!-- Sections Container -->
@@ -67,105 +90,89 @@
     <section class="section" id="home">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~</div>
         </div>
         <div class="code-block">
           <div><span class="prompt">root@ammz:~$</span> whoami</div>
-          <div style="margin: 1.5rem 0; font-size: clamp(1.5rem, 5vw, 3rem); text-shadow: 0 0 30px #0f0; font-weight: 900;">AUNG MYO MYAT ZAW</div>
-          
-          <div><span class="prompt">root@ammz:~$</span> cat greeting.txt</div>
-          <div style="margin: 1rem 0;">
-            <span class="string">"<span style="font-family: 'Padauk', sans-serif;">မင်္ဂလာပါ</span>"</span> <span class="comment"># Hello in Burmese</span><br>
-            <span class="comment"># Full-Stack Developer from Myanmar 🇲🇲</span><br>
-            <span class="comment"># Age: 23 | Born: Dec 12, 2002</span>
+          <div style="position: relative; display: inline-block; margin: 2rem 0;">
+          <div class="my-name">
+              AUNG MYO MYAT ZAW
+            </div>
           </div>
-
+          <div><span class="prompt">root@ammz:~$</span> cat greeting.txt</div>
+          <div style="margin: 0.3rem 0;">
+            <span class="string">"<span style="font-family: 'Padauk', sans-serif;">မင်္ဂလာပါ</span>"</span> <span class="comment"># Hello</span><br>
+            <span class="string">"<span style="font-family: 'Padauk', sans-serif;">ကြိုဆိုပါတယ်ခဗျ</span>"</span> <span class="comment">#Welcome from My Profile.</span><br>
+            <span class="comment"># I am just trying to be a one of the Full-Stack Developer from Myanmar</span><br>
+            <span class="comment"># Age: 23 | Born: Dec, 2002</span>
+            <br><span class="comment"># Hope You Enjoy My Poor Design</span>
+          </div>
           <div><span class="prompt">root@ammz:~$</span> ls -la</div>
-          <div style="margin: 1rem 0;">
+          <div style="margin: 0.8rem 0;">
             <span class="function">drwxr-xr-x</span> about_experience/<br>
             <span class="function">drwxr-xr-x</span> contact/<br>
             <span class="function">drwxr-xr-x</span> certificates/<br>
-            <span class="function">drwxr-xr-x</span> projects/<br>
+            <span class="function">drwxr-xr-x</span> projects/ In Room P1,2,3<br>
+            <span class="function">drwxr-xr-x</span> games/ In Room G1,2,3
           </div>
-
-          <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~$</span> <span class="typing-cursor"></span>
-          </div>
+          <div style="margin-top: 0.3rem;"><span class="prompt">root@ammz:~$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
 
-    <!-- ABOUT & EXPERIENCE -->
+    <!-- ABOUT -->
     <section class="section" id="about-exp">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/about_experience</div>
         </div>
         <div class="code-block">
           <div><span class="prompt">root@ammz:~/about_experience$</span> ls -la</div>
-          
-          <div style="margin: 1.5rem 0;">
+          <div style="margin: 1rem 0;">
             <div class="cmd-button" onclick="showAbout()">./show_about.sh</div>
             <div class="cmd-button" onclick="showExperience()">./show_experience.sh</div>
           </div>
-
-          <div id="about-content" style="display: none; margin-top: 1.5rem;">
+          <div id="about-content" style="display: none; margin-top: 1rem;">
             <div><span class="prompt">root@ammz:~/about_experience$</span> ./show_about.sh</div>
-            <pre style="margin-top: 1rem;">
+            <pre style="margin-top: 0.8rem; font-size: 0.85rem;">
 <span class="keyword">class</span> Developer:
     <span class="keyword">def</span> __init__(self):
         self.name = <span class="string">"Aung Myo Myat Zaw"</span>
         self.age = <span class="string">23</span>
-        self.born = <span class="string">"December 12, 2002"</span>
-        self.location = <span class="string">"Myanmar"</span>
-        self.role = <span class="string">"Full-Stack Developer"</span>
+        self.born = <span class="string">"Dec 12, 2002"</span>
+        self.location = <span class="string">"Myanmar 🇲🇲"</span>
         
     <span class="keyword">def</span> get_story(self):
-        <span class="keyword">return</span> <span class="string">"""
-        Started tech journey at age 14 (2016)
-        Learned HTML, CSS, coding on mobile
-        Now building real-world solutions
-        Passionate about practical development
-        """</span>
+        <span class="keyword">return</span> <span class="string">"""Started at 14 (2016)
+        Learned HTML/CSS on mobile
+        Building real solutions"""</span>
             </pre>
           </div>
-
-          <div id="experience-content" style="display: none; margin-top: 1.5rem;">
+          <div id="experience-content" style="display: none; margin-top: 1rem;">
             <div><span class="prompt">root@ammz:~/about_experience$</span> ./show_experience.sh</div>
-            <div style="margin-top: 1rem;">
-              <div style="margin-bottom: 1.5rem;">
-                <span class="function">$ cat timeline.log</span><br><br>
-                <span class="string">2016 (Age 14):</span> Started freelancing in social media & IT<br>
-                <span class="comment"># Learned HTML/CSS on mobile without laptop</span><br>
-                <span class="comment"># Explored cybersecurity (now reformed)</span><br><br>
-                
-                <span class="string">2020-2021:</span> Took break during COVID & Myanmar crisis<br>
-                <span class="comment"># Paused studies at Sagaing Technological University</span><br><br>
-                
+            <div style="margin-top: 0.8rem; font-size: 0.85rem;">
+              <div style="margin-bottom: 1rem;">
+                <span class="string">2016 (Age 14):</span> Started freelancing<br>
+                <span class="comment"># With a mobile phone</span><br><br>
+                <span class="string">2020-2021:</span> COVID & Myanmar crisis<br>
+                <span class="comment"># Stop studies</span><br><br>
                 <span class="string">Dec 2024:</span> Returned to coding<br>
-                <span class="comment"># Relearned programming</span><br><br>
-                
-                <span class="string">2025 (Now):</span> Active development<br>
-                <span class="comment"># Built temp email service & Telegram bot</span><br>
-                <span class="comment"># Focused on practical solutions</span>
-              </div>
-              <div>
-                <span class="comment"># Current Skills</span><br>
-                Python/Flask ████████████ 90%<br>
-                JavaScript ███████████ 85%<br>
-                PostgreSQL ████████ 80%<br>
-                HTML/CSS ███████████ 85%
+                <span class="string">Sep 2025:</span> Write this 3 projects in 1 Month including this portfolio website.<br>
+                <span class="comment"># And Temp-mail Service & Video downloader Service</span>
               </div>
             </div>
           </div>
-
-          <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~/about_experience$</span> <span class="typing-cursor"></span>
-          </div>
+          <div style="margin-top: 1rem;"><span class="prompt">root@ammz:~/about_experience$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
@@ -174,35 +181,33 @@
     <section class="section" id="contact">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/contact</div>
         </div>
         <div class="code-block">
           <div><span class="prompt">root@ammz:~/contact$</span> cat contact_info.json</div>
-          <pre style="margin-top: 1.5rem;">
+          <pre style="margin-top: 1rem; font-size: 0.9rem;">
 {
   <span class="string">"name"</span>: <span class="string">"Aung Myo Myat Zaw"</span>,
-  <span class="string">"location"</span>: <span class="string">"Myanmar 🇲🇲"</span>,
+  <span class="string">"location"</span>: <span class="string">"Myanmar(Burma)"</span>,
   <span class="string">"age"</span>: <span class="string">23</span>,
-  <span class="string">"email"</span>: <span class="string">"your@email.com"</span>,
-  <span class="string">"github"</span>: <span class="string">"github.com/yourusername"</span>,
-  <span class="string">"facebook"</span>: <span class="string">"facebook.com/yourprofile"</span>,
-  <span class="string">"telegram"</span>: <span class="string">"@yourusername"</span>,
+  <span class="string">"email"</span>: <span class="string">"aungmyomyatzaw@hotmail.com"</span>,
+  <span class="string">"github"</span>: <span class="string">"github.com/whoamiSir"</span>,
+  <span class="string">"telegram"</span>: <span class="string">"@whoamiSir"</span>,
   <span class="string">"status"</span>: <span class="string">"🟢 Available for projects"</span>
 }
           </pre>
-
-          <div style="margin-top: 2rem;">
-            <a href="mailto:your@email.com" class="cmd-button">📧 Email</a>
-            <a href="https://github.com/yourusername" target="_blank" class="cmd-button">💻 GitHub</a>
-            <a href="https://facebook.com/yourprofile" target="_blank" class="cmd-button">👤 Facebook</a>
-            <a href="https://t.me/yourusername" target="_blank" class="cmd-button">📱 Telegram</a>
-          </div>
-
           <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~/contact$</span> <span class="typing-cursor"></span>
+            <a href="mailto: aungmyomyatzaw@hotmail.com" class="cmd-button">📧 Email</a>
+            <a href="https://github.com/whoamiSir" target="_blank" class="cmd-button">💻 GitHub</a>
+            <a href="https://t.me/whoamiSir" target="_blank" class="cmd-button">📱 Telegram</a>
+            <a href="https://www.facebook.com/aungmyomyatzawIT" target="_blank" class="cmd-button">📘 Facebook</a>
           </div>
+          <div style="margin-top: 1rem;"><span class="prompt">root@ammz:~/contact$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
@@ -211,183 +216,431 @@
     <section class="section" id="certificates">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/certificates</div>
         </div>
         <div class="code-block">
           <div><span class="prompt">root@ammz:~/certificates$</span> ls -la</div>
-          
+          <div style="margin: 1rem 0; font-size: 0.85rem;">
+            <div><span class="comment"># Professional Certifications</span></div>
+          </div>
           <div class="cert-gallery">
-            <div class="cert-card">
-              <div class="cert-icon">🎓</div>
-              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Python Developer</div>
-              <div style="color: #0f08; font-size: 0.85rem;">Self-Taught</div>
+            <div class="cert-card" data-cert="freecodecamp">
+              <div class="cert-icon">🔥</div>
+              <div style="font-size: 0.95rem; margin-bottom: 0.3rem; font-weight: 700;">JavaScript Algorithms</div>
+              <div style="color: rgba(41, 223, 41, 0.7); font-size: 0.75rem;">freeCodeCamp<br>300 Hours</div>
             </div>
 
-            <div class="cert-card">
-              <div class="cert-icon">📜</div>
-              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Web Development</div>
-              <div style="color: #0f08; font-size: 0.85rem;">Since 2016</div>
+            <div class="cert-card" data-cert="python">
+              <div class="cert-icon">🐍</div>
+              <div style="font-size: 0.95rem; margin-bottom: 0.3rem; font-weight: 700;">Python</div>
+              <div style="color: rgba(41, 223, 41, 0.7); font-size: 0.75rem;">SoloLearn<br>Sep 2023</div>
             </div>
 
-            <div class="cert-card">
-              <div class="cert-icon">🏆</div>
-              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Database Design</div>
-              <div style="color: #0f08; font-size: 0.85rem;">PostgreSQL</div>
+            <div class="cert-card" data-cert="html">
+              <div class="cert-icon">🌐</div>
+              <div style="font-size: 0.95rem; margin-bottom: 0.3rem; font-weight: 700;">HTML</div>
+              <div style="color: rgba(41, 223, 41, 0.7); font-size: 0.75rem;">SoloLearn<br>Sep 2023</div>
             </div>
 
-            <div class="cert-card">
-              <div class="cert-icon">⭐</div>
-              <div style="font-size: clamp(0.9rem, 2vw, 1.1rem); margin-bottom: 0.5rem;">Flask Backend</div>
-              <div style="color: #0f08; font-size: 0.85rem;">2025</div>
+            <div class="cert-card" data-cert="network">
+              <div class="cert-icon">🛰️</div>
+              <div style="font-size: 0.95rem; margin-bottom: 0.3rem; font-weight: 700;">Network Engineering</div>
+              <div style="color: rgba(41, 223, 41, 0.7); font-size: 0.75rem;">TechnoLearn<br>Jul 2023</div>
+            </div>
+
+            <div class="cert-card" data-cert="repair">
+              <div class="cert-icon">🔧</div>
+              <div style="font-size: 0.95rem; margin-bottom: 0.3rem; font-weight: 700;">Computer Repair (A+)</div>
+              <div style="color: rgba(41, 223, 41, 0.7); font-size: 0.75rem;">TechnoLearn<br>Jun 2023</div>
             </div>
           </div>
-
-          <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~/certificates$</span> <span class="typing-cursor"></span>
+          <div style="margin-top: 1.5rem; font-size: 0.85rem;">
+            <div><span class="comment"># Self-Taught Skills</span></div>
+            <div style="margin-top: 0.2rem; line-height: 1;">
+              • <span class="string">Flask Web Framework</span> - Backend development<br>
+              • <span class="string">PostgreSQL Database</span> - Data persistence<br>
+              • <span class="string">AWS Lambda & S3</span> - Cloud infrastructure<br>
+              • <span class="string">Telegram Bot API</span> - API integration<br>
+              • <span class="string">Responsive UI/UX</span> - Frontend design
+            </div>
           </div>
+          <div style="margin-top: 1rem;"><span class="prompt">root@ammz:~/certificates$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
 
-    <!-- PROJECTS PAGE -->
+
+    <!-- PROJECTS HUB -->
     <section class="section" id="projects">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/projects</div>
         </div>
         <div class="code-block">
           <div><span class="prompt">root@ammz:~/projects$</span> ls -la</div>
-          <div style="margin: 1.5rem 0;">
-            <span class="function">drwxr-xr-x</span> 01_tempmail_service/<br>
-            <span class="function">drwxr-xr-x</span> 02_telegram_video_bot/<br>
-            <span class="comment">drwxr-xr-x</span> 03_coming_soon/ <span class="comment"># In development</span>
+          <div style="margin: 1rem 0; font-size: 0.9rem;">
+            <span class="comment">#</span><span class="red-color"> ← Games Section (Terminal Games)</span><br>
+            <span class="function">drwxr-xr-x</span> 01_snake_game/<br>
+            <span class="function">drwxr-xr-x</span> 02_tictactoe_game/<br>
+            <span class="function">drwxr-xr-x</span> 03_memory_game/<br><br>
+            <span class="comment"># </span><span class="red-color">→ Projects Section (Real Applications)</span><br>
+            <span class="function">drwxr-xr-x</span> 04_tempmail_service/<br>
+            <span class="function">drwxr-xr-x</span> 05_video_downloader/<br>
+            <span class="function">drwxr-xr-x</span> 06_coming_soon/
           </div>
-
-          <div><span class="prompt">root@ammz:~/projects$</span> <span class="comment"># Scroll right → to view projects</span></div>
-
-          <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~/projects$</span> <span class="typing-cursor"></span>
-          </div>
+          <div><span class="prompt">root@ammz:~/projects$</span> <span class="comment"># Use arrow keys or map to navigate</span></div>
+          <div style="margin-top: 1rem;"><span class="prompt">root@ammz:~/projects$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
 
-    <!-- PROJECT 1: TEMPMAIL -->
+    <!-- GAME 1: SNAKE -->
+    <section class="section" id="game-1">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/games/snake</div>
+        </div>
+        <div class="code-block" id="snake-content"></div>
+      </div>
+    </section>
+
+    <!-- GAME 2: TIC-TAC-TOE -->
+    <section class="section" id="game-2">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/games/tictactoe</div>
+        </div>
+        <div class="code-block" id="ttt-content"></div>
+      </div>
+    </section>
+
+    <!-- GAME 3: MEMORY -->
+    <section class="section" id="game-3">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/games/memory</div>
+        </div>
+        <div class="code-block" id="mem-content"></div>
+      </div>
+    </section>
+
+    <!-- PROJECT 1: TEMP-MAIL SERVICE -->
     <section class="section" id="project-1">
-      <div class="terminal-window">
+      <!-- MOBILE: Single scrollable terminal -->
+      <div class="terminal-window mobile-only">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/projects/04_tempmail</div>
         </div>
         <div class="code-block">
-          <div><span class="prompt">root@ammz:~/projects/01_tempmail$</span> cat README.md</div>
-          
+          <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> cat README.md</div>
           <div style="margin: 1.5rem 0;">
-            <div style="font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 1rem;">📧 Temporary Email Service</div>
-            <p style="line-height: 1.8; color: #0f08;">
-              Anonymous temporary email with real-time inbox, admin panel, and PostgreSQL backend.
-              Built from scratch with Flask and modern web technologies.
-            </p>
+            <div style="font-size: 2rem; margin-bottom: 0.8rem;">📧 Temporary Email Service</div>
+            <p style="line-height: 1.7; color: rgba(41, 223, 41, 0.916); font-size: 0.9rem;">Anonymous disposable email with real-time inbox monitoring, custom domain support, and admin panel. Built for privacy-conscious users.</p>
           </div>
-
-          <div style="margin: 1rem 0;">
-            <span class="keyword">Tech Stack:</span><br>
-            • Python + Flask<br>
-            • PostgreSQL + psycopg2<br>
-            • JavaScript + WebSockets<br>
-            • Cloudflare + Render.com
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">✨ Key Features</div>
+            <div style="padding-left: 1rem; line-height: 1.8;">
+              • <span class="string">Anonymous email generation</span> - No signup required<br>
+              • <span class="string">Real-time inbox monitoring</span> - Instant email delivery<br>
+              • <span class="string">Custom domain support</span> - Use your own domain<br>
+              • <span class="string">Email expiration control</span> - Auto-delete after time<br>
+              • <span class="string">Admin panel</span> - Blacklist & management tools
+            </div>
           </div>
-
-          <div style="margin-top: 1.5rem;">
-            <a href="/tempmail" class="cmd-button">🚀 Launch Demo</a>
-            <a href="#" class="cmd-button">📂 View Code</a>
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">🛠️ Tech Stack</div>
+            <div style="padding-left: 1rem; line-height: 1.8;">
+              <span class="keyword">Backend:</span> Flask (Python), PostgreSQL<br>
+              <span class="keyword">Hosting:</span> Render.com (Free tier)<br>
+              <span class="keyword">Email Routing:</span> Cloudflare Email Routing<br>
+              <span class="keyword">Frontend:</span> Responsive HTML/CSS/JS<br>
+              <span class="keyword">Security:</span> Session management, Rate limiting
+            </div>
           </div>
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">🎯 Challenges Solved</div>
+            <div style="padding-left: 1rem; color: rgba(41, 223, 41, 0.916); line-height: 1.8;">
+              <div style="margin-bottom: 0.8rem;"><span class="keyword">1. Database Persistence:</span><br>Optimized queries for free-tier limitations</div>
+              <div style="margin-bottom: 0.8rem;"><span class="keyword">2. Custom Domain Setup:</span><br>Configured DNS & Cloudflare</div>
+              <div><span class="keyword">3. Security & Sessions:</span><br>Device ID tracking & admin auth</div>
+            </div>
+          </div>
+          <div style="margin-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center ">
+            <a href="https://tempmail.aungmyomyatzaw.online" target="_blank" class="cmd-button" style="flex: 1; min-width: 120px; text-align: center;">🚀 Launch App</a>
+            <a href="https://github.com/whoamiSir/aungmyomyatzaw/tree/main/static/projects/tempmail" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">📂 Code</a>
+          </div>
+        </div>
+      </div>
 
-          <div style="margin-top: 1rem;">
-            <span class="prompt">root@ammz:~/projects/01_tempmail$</span> <span class="typing-cursor"></span>
+      <!-- DESKTOP: Split view -->
+      <div class="project-split-view desktop-only">
+        <div class="terminal-window project-menu-terminal">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+            </div>
+            <div class="terminal-title">root@ammz:~/projects/04_tempmail</div>
+          </div>
+          <div class="code-block">
+            <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> ls -la</div>
+            <div style="margin: 1rem 0;">
+              <div class="project-menu-btn" onclick="showProjectSection('p1-overview')">📄 ./show_overview.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p1-features')">✨ ./show_features.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p1-tech')">🛠️ ./show_techstack.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p1-challenges')">🎯 ./show_challenges.sh</div>
+            </div>
+          <div style="margin-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center ">
+            <a href="https://tempmail.aungmyomyatzaw.online" target="_blank" class="cmd-button" style="flex: 1; min-width: 120px; text-align: center;">🚀 Launch App</a>
+            <a href="https://github.com/whoamiSir/aungmyomyatzaw/tree/main/static/projects/tempmail" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">📂 Code</a>
+          </div>
+          </div>
+        </div>
+        <div class="terminal-window project-content-terminal">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+            </div>
+            <div class="terminal-title">root@ammz:~/projects/04_tempmail/details</div>
+          </div>
+          <div class="code-block">
+            <div id="p1-overview" class="project-content-section">
+              <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> ./show_overview.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 2rem; margin-bottom: 0.8rem;">📧 Temporary Email Service</div>
+                <p style="line-height: 1.7; color: rgba(41, 223, 41, 0.916);">A privacy-focused temporary email service with real-time inbox monitoring. Users can generate anonymous emails instantly and receive messages in real-time.</p>
+              </div>
+            </div>
+            <div id="p1-features" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> ./show_features.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 1.5rem; color: #0ff; margin-bottom: 1rem;">✨ Key Features</div>
+                <div style="line-height: 2;">
+                  • <span class="string">Anonymous generation</span> - No signup<br>
+                  • <span class="string">Real-time monitoring</span> - Instant updates<br>
+                  • <span class="string">Custom domains</span> - Your own domain<br>
+                  • <span class="string">Email expiration</span> - Auto-cleanup<br>
+                  • <span class="string">Admin panel</span> - Blacklist management
+                </div>
+              </div>
+            </div>
+            <div id="p1-tech" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> ./show_techstack.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 1.5rem; color: #0ff; margin-bottom: 1rem;">🛠️ Technology Stack</div>
+                <pre style="line-height: 1.8; font-size: 0.9rem;"><span class="keyword">Backend:</span> Flask, PostgreSQL
+    <span class="keyword">Hosting:</span> Render.com
+    <span class="keyword">Email:</span> Cloudflare Routing
+    <span class="keyword">Frontend:</span> HTML/CSS/JS
+    <span class="keyword">Security:</span> Session management</pre>
+              </div>
+            </div>
+            <div id="p1-challenges" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/04_tempmail$</span> ./show_challenges.sh</div>
+              <div style="margin: 1.5rem 0; line-height: 2;">
+                <span class="keyword">Database:</span> Free-tier optimization<br>
+                <span class="keyword">Email Routing:</span> DNS configuration<br>
+                <span class="keyword">Security:</span> Session & admin auth
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PROJECT 2: TELEGRAM BOT -->
+    <!-- PROJECT 2: VIDEO DOWNLOADER -->
     <section class="section" id="project-2">
-      <div class="terminal-window">
+      <!-- MOBILE -->
+      <div class="terminal-window mobile-only">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/projects/05_video_downloader</div>
         </div>
         <div class="code-block">
-          <div><span class="prompt">root@ammz:~/projects/02_telegram_bot$</span> cat README.md</div>
-          
+          <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> cat README.md</div>
           <div style="margin: 1.5rem 0;">
-            <div style="font-size: clamp(1.3rem, 3vw, 1.8rem); margin-bottom: 1rem;">🤖 Telegram Video Downloader</div>
-            <p style="line-height: 1.8; color: #0f08;">
-              Download YouTube & TikTok videos without watermark directly through Telegram.
-              Serverless deployment on AWS Lambda for high availability.
-            </p>
+            <div style="font-size: 2rem; margin-bottom: 0.8rem;">🎬 Video Downloader Bot</div>
+            <p style="line-height: 1.7; color: rgba(41, 223, 41, 0.916); font-size: 0.9rem;">Telegram bot for downloading videos from YouTube, TikTok, and other platforms. Built with AWS Lambda for serverless execution and optimized for large file handling.</p>
           </div>
-
-          <div style="margin: 1rem 0;">
-            <span class="keyword">Tech Stack:</span><br>
-            • Python<br>
-            • AWS Lambda (Serverless)<br>
-            • Telegram Bot API<br>
-            • yt-dlp
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">✨ Features</div>
+            <div style="padding-left: 1rem; line-height: 1.8;">
+              • <span class="string">Multi-platform</span> - YouTube, TikTok, more<br>
+              • <span class="string">Quality selection</span> - Choose resolution<br>
+              • <span class="string">Fast processing</span> - AWS Lambda serverless<br>
+              • <span class="string">Large files</span> - S3 storage integration<br>
+              • <span class="string">Bot bypass</span> - Cookie authentication
+            </div>
           </div>
-
-          <div style="margin-top: 1.5rem;">
-            <a href="#" class="cmd-button">🤖 Try Bot</a>
-            <a href="#" class="cmd-button">📂 View Code</a>
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">🛠️ Tech Stack</div>
+            <div style="padding-left: 1rem; line-height: 1.8;">
+              <span class="keyword">Core:</span> Python, yt-dlp library<br>
+              <span class="keyword">Platform:</span> AWS Lambda (Serverless)<br>
+              <span class="keyword">Storage:</span> AWS S3 for large files<br>
+              <span class="keyword">Interface:</span> Telegram Bot API<br>
+              <span class="keyword">Monitoring:</span> CloudWatch logging
+            </div>
           </div>
+          <div style="margin: 1.5rem 0;">
+            <div style="font-size: 1.3rem; color: #0ff; margin-bottom: 0.8rem;">🎯 Challenges</div>
+            <div style="padding-left: 1rem; color: rgba(41, 223, 41, 0.916); line-height: 1.8;">
+              <div style="margin-bottom: 0.8rem;"><span class="keyword">1. Lambda Limits:</span><br>Large videos (1GB+) needed S3</div>
+              <div style="margin-bottom: 0.8rem;"><span class="keyword">2. Bot Detection:</span><br>Implemented cookie auth</div>
+              <div><span class="keyword">3. Timeouts:</span><br>Webhook & async processing</div>
+            </div>
+          </div>
+          <div style="margin-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center ">
+            <a href="https://t.me/ytdownloaderbyammz_bot" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">🤖 Try Bot</a>
+            <a href="https://tempmail.aungmyomyatzaw.online/projects/downloader" target="_blank" class="cmd-button" style="flex: 1; min-width: 120px; text-align: center;">🚀 Launch App</a>
+            <a href="https://github.com/whoamiSir/aungmyomyatzaw/tree/main/static/projects/downloader" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">📂 Code</a>
+          </div>
+        </div>
+      </div>
 
-          <div style="margin-top: 1rem;">
-            <span class="prompt">root@ammz:~/projects/02_telegram_bot$</span> <span class="typing-cursor"></span>
+      <!-- DESKTOP -->
+      <div class="project-split-view desktop-only">
+        <div class="terminal-window project-menu-terminal">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+            </div>
+            <div class="terminal-title">root@ammz:~/projects/05_video_downloader</div>
+          </div>
+          <div class="code-block">
+            <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> ls -la</div>
+            <div style="margin: 1rem 0;">
+              <div class="project-menu-btn" onclick="showProjectSection('p2-overview')">📄 ./show_overview.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p2-features')">✨ ./show_features.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p2-tech')">🛠️ ./show_techstack.sh</div>
+              <div class="project-menu-btn" onclick="showProjectSection('p2-challenges')">🎯 ./show_challenges.sh</div>
+            </div>
+          <div style="margin-top: 1.5rem; margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center ">
+            <a href="https://t.me/ytdownloaderbyammz_bot" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">🤖 Try Bot</a>
+            <a href="https://tempmail.aungmyomyatzaw.online/projects/downloader" target="_blank" class="cmd-button" style="flex: 1; min-width: 120px; text-align: center;">🚀 Launch App</a>
+            <a href="https://github.com/whoamiSir/aungmyomyatzaw/tree/main/static/projects/downloader" class="cmd-button" target="_blank" style="flex: 1; min-width: 120px; text-align: center;">📂 Code</a>
+          </div>
+          </div>
+        </div>
+        <div class="terminal-window project-content-terminal">
+          <div class="terminal-header">
+            <div class="terminal-buttons">
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+              <div class="terminal-btn"></div>
+            </div>
+            <div class="terminal-title">root@ammz:~/projects/05_video_downloader/details</div>
+          </div>
+          <div class="code-block">
+            <div id="p2-overview" class="project-content-section">
+              <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> ./show_overview.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 2rem; margin-bottom: 0.8rem;">🎬 Video Downloader Bot</div>
+                <p style="line-height: 1.7; color: rgba(41, 223, 41, 0.916);">Serverless Telegram bot for downloading videos. Handles large files efficiently with AWS Lambda and S3 storage. Support for YouTube, TikTok, and more.</p>
+              </div>
+            </div>
+            <div id="p2-features" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> ./show_features.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 1.5rem; color: #0ff; margin-bottom: 1rem;">✨ Features</div>
+                <div style="line-height: 2;">
+                  • <span class="string">Multi-platform</span> - YouTube, TikTok<br>
+                  • <span class="string">Quality selection</span> - Choose resolution<br>
+                  • <span class="string">Serverless</span> - AWS Lambda<br>
+                  • <span class="string">Large files</span> - S3 integration<br>
+                  • <span class="string">Anti-detection</span> - Cookie auth
+                </div>
+              </div>
+            </div>
+            <div id="p2-tech" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> ./show_techstack.sh</div>
+              <div style="margin: 1.5rem 0;">
+                <div style="font-size: 1.5rem; color: #0ff; margin-bottom: 1rem;">🛠️ Technology</div>
+                <pre style="line-height: 1.8; font-size: 0.9rem;"><span class="keyword">Core:</span> Python, yt-dlp
+    <span class="keyword">Compute:</span> AWS Lambda
+    <span class="keyword">Storage:</span> AWS S3
+    <span class="keyword">Bot:</span> Telegram API
+    <span class="keyword">Logging:</span> CloudWatch</pre>
+              </div>
+            </div>
+            <div id="p2-challenges" class="project-content-section" style="display:none;">
+              <div><span class="prompt">root@ammz:~/projects/05_video_downloader$</span> ./show_challenges.sh</div>
+              <div style="margin: 1.5rem 0; line-height: 2;">
+                <span class="keyword">Lambda Memory:</span> 1GB+ videos to S3<br>
+                <span class="keyword">Bot Detection:</span> Cookie-based auth<br>
+                <span class="keyword">Timeouts:</span> Webhook + async
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- COMING SOON -->
-    <section class="section" id="coming-soon">
+    <!-- PROJECT 3: COMING SOON -->
+    <section class="section" id="project-3">
       <div class="terminal-window">
         <div class="terminal-header">
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
-          <div class="terminal-btn"></div>
+          <div class="terminal-buttons">
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+            <div class="terminal-btn"></div>
+          </div>
+          <div class="terminal-title">root@ammz:~/projects/06_coming_soon</div>
         </div>
         <div class="code-block">
-          <div><span class="prompt">root@ammz:~/projects/03_coming_soon$</span> cat status.txt</div>
-          
+          <div><span class="prompt">root@ammz:~/projects/06_coming_soon$</span> cat status.txt</div>
           <div style="margin: 2rem 0; text-align: center;">
-            <div style="font-size: clamp(3rem, 8vw, 4rem); margin-bottom: 1rem;">🚧</div>
-            <div style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem;">Under Development</div>
-            <p style="line-height: 1.8; color: #0f08;">
-              New exciting project in the works!<br>
-              Stay tuned for updates...
-            </p>
+            <div style="font-size: 3.5rem;">🚧</div>
+            <div style="font-size: 1.8rem; margin: 0.8rem 0;">Under Development</div>
+            <p style="color: rgba(41, 223, 41, 0.916);">New innovative project coming soon...</p>
           </div>
-
-          <div style="margin-top: 2rem; text-align: center;">
-            <span class="comment"># Building something awesome</span>
-          </div>
-
-          <div style="margin-top: 1.5rem;">
-            <span class="prompt">root@ammz:~/projects/03_coming_soon$</span> <span class="typing-cursor"></span>
-          </div>
+          <div style="margin-top: 1rem;"><span class="prompt">root@ammz:~/projects/06_coming_soon$</span> <span class="typing-cursor"></span></div>
         </div>
       </div>
     </section>
+
 
   </div>
 
-  <!-- JAVASCRIPT -->
   <script src="/static/portfolio/portfolio.js"></script>
 </body>
 </html>
