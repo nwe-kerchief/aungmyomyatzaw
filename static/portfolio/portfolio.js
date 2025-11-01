@@ -982,11 +982,11 @@ document.addEventListener('keydown', (e) => {
 
 
 const certImageMap = {
-  'freecodecamp': './certificates/freecodecamp.jpg',
-  'python': './certificates/python.jpg',
-  'html': './certificates/html.jpg',
-  'network': './certificates/networking.jpg',
-  'repair': './certificates/repair.jpg'
+  'freecodecamp': '/static/portfolio/certificates/freecodecamp.jpg',
+  'python': '/static/portfolio/certificates/python.jpg',
+  'html': '/static/portfolio/certificates/html.jpg',
+  'network': '/static/portfolio/certificates/networking.jpg',
+  'repair': '/static/portfolio/certificates/repair.jpg'
 };
 
 let currentCertImage = null;
