@@ -807,12 +807,12 @@ def get_domain():
 
 def is_tempmail_domain():
     host = request.headers.get('Host', '').lower()
-    return 'tempmail' in host
-
+    return 'tempmail.' in host  # Note the dot
 
 def is_portfolio_domain():
     host = request.headers.get('Host', '').lower()
-    return 'tempmail' not in host and 'aungmyomyatzaw.com' in host
+    # Not tempmail subdomain AND contains your domain name
+    return 'tempmail.' not in host and 'aungmyomyatzaw.com' in host
 
 
 
