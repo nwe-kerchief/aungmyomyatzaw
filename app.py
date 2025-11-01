@@ -19,7 +19,7 @@ import mailparser
 import html2text
 from bs4 import BeautifulSoup
 import time as time_module
-from psycopg2 import OperationalError
+#from psycopg2 import OperationalError
 
 
 # Configure logging
@@ -806,12 +806,30 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
+@app.route('/<path:filename>')
+def serve_static_subdomain(filename):
+    """Serve static files based on subdomain"""
+    subdomain = get_subdomain()
+    
+    if subdomain == 'tempmail':
+        # Serve from tempmail folder on subdomain
+        return send_from_directory('static/projects/tempmail', filename)
+    else:
+        # Serve from portfolio folder on main domain
+        return send_from_directory('static/portfolio', filename)
 
 
 @app.route('/')
-def portfolio_home():
-    """Portfolio as main landing page"""
-    return send_from_directory('static/portfolio', 'index.html')
+def index():
+    """Route based on subdomain"""
+    subdomain = get_subdomain()
+    
+    if subdomain == 'tempmail':
+        # tempmail.aungmyomyatzaw.online → tempmail home
+        return send_from_directory('static/projects/tempmail', 'index.html')
+    else:
+        # aungmyomyatzaw.online → portfolio
+        return send_from_directory('static/portfolio', 'index.html')
 
 @app.route('/portfolio')
 def portfolio_redirect():
@@ -853,7 +871,7 @@ def proxy_to_lambda():
         response = requests.post(
             LAMBDA_API_URL,
             json=data,
-            timeout=60  # Render handles longer timeouts than Netlify
+            timeout=300  # Render handles longer timeouts than Netlify
         )
         
         logger.info(f"📤 Lambda response status: {response.status_code}")
@@ -871,6 +889,13 @@ def proxy_to_lambda():
         logger.error(f"Proxy error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     
+def get_subdomain():
+    """Detect which subdomain the request is coming from"""
+    host = request.host.lower()
+    if 'tempmail.' in host:
+        return 'tempmail'
+    return 'main'
+
 
 @app.route('/projects/tempmail')
 def tempmail_home():
@@ -2606,5 +2631,6 @@ create_indexes_if_needed()
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_ENV') == 'development'
+
     app.run(host='0.0.0.0', port=port, debug=debug)
 
