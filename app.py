@@ -794,6 +794,7 @@ def validate_session(email_address, session_token):
         return False, str(e)
     
 
+
 @app.after_request
 def after_request(response):
     """Add CORS headers after each request"""
@@ -805,14 +806,15 @@ def after_request(response):
 def get_domain():
     return request.headers.get('Host', '').lower()
 
-def is_tempmail_domain():
-    host = request.headers.get('Host', '').lower()
-    return 'tempmail.' in host  # Note the dot
-
 def is_portfolio_domain():
     host = request.headers.get('Host', '').lower()
-    # Not tempmail subdomain AND contains your domain name
-    return 'tempmail.' not in host and 'aungmyomyatzaw.com' in host
+    # Only block subdomain (tempmail), let everything else with domain work as portfolio
+    return host.endswith('aungmyomyatzaw.com') and not host.startswith('tempmail.')
+
+def is_tempmail_domain():
+    host = request.headers.get('Host', '').lower()
+    return host.startswith('tempmail.') and host.endswith('aungmyomyatzaw.com')
+
 
 
 
@@ -821,8 +823,8 @@ def route_by_domain():
     host = request.headers.get('Host', '').lower()
     path = request.path
 
-        # 🔍 DEBUG
-    print(f"🔍 Host: {host} | Path: {path}")
+    print(f"DEBUG: Host={host}, Path={path}", flush=True)
+
     
     # Allow static files
     if path.startswith('/static') or path.startswith('/api'):
@@ -845,12 +847,18 @@ def route_by_domain():
 
 @app.route('/')
 def index():
-    if is_tempmail_domain():
-        print("✅ Serving tempmail index")
-        return send_from_directory('static/projects/tempmail', 'index.html')
-    else:
-        print("✅ Serving portfolio index")
+    if is_portfolio_domain():
         return send_from_directory('static/portfolio', 'index.html')
+    elif is_tempmail_domain():
+        return send_from_directory('static/projects/tempmail', 'index.html')
+    abort(404)
+
+@app.route('/projects/downloader')
+def downloader():
+    if is_portfolio_domain():
+        return send_from_directory('static/projects/downloader', 'index.html')
+    abort(404)
+
 
 
 @app.route('/admin')
@@ -859,15 +867,6 @@ def admin():
         print("✅ Serving admin")
         return send_from_directory('static/projects/tempmail', 'admin.html')
     print("❌ Admin blocked on portfolio domain")
-    abort(404)
-
-
-@app.route('/projects/downloader')
-def downloader():
-    if is_portfolio_domain():
-        print("✅ Serving downloader")
-        return send_from_directory('static/projects/downloader', 'index.html')
-    print("❌ Downloader blocked on tempmail domain")
     abort(404)
 
 
