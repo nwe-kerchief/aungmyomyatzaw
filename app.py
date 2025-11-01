@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, send_from_directory, session,abort
+from flask import Flask, request, jsonify, render_template, send_from_directory, session
 from flask_cors import CORS
 import os
 import requests
@@ -793,7 +793,10 @@ def validate_session(email_address, session_token):
         logger.error(f"Session validation error: {e}")
         return False, str(e)
     
-
+@app.before_request
+def before_request():
+    """Set session as permanent before each request"""
+    session.permanent = True
 
 @app.after_request
 def after_request(response):
@@ -803,102 +806,32 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-def get_domain():
-    return request.headers.get('Host', '').lower()
-
-def is_portfolio_domain():
-    host = request.headers.get('Host', '').lower()
-    # Only block subdomain (tempmail), let everything else with domain work as portfolio
-    return host.endswith('aungmyomyatzaw.com') and not host.startswith('tempmail.')
-
-def is_tempmail_domain():
-    host = request.headers.get('Host', '').lower()
-    return host.startswith('tempmail.') and host.endswith('aungmyomyatzaw.com')
-
-
-
-
-@app.before_request
-def route_by_domain():
-    host = request.headers.get('Host', '').lower()
-    path = request.path
-
-    print(f"DEBUG: Host={host}, Path={path}", flush=True)
-
-    
-    # Allow static files
-    if path.startswith('/static') or path.startswith('/api'):
-        return
-    
-    # Tempmail domain
-    if 'tempmail' in host:
-        if path in ['/', '/admin'] or path.startswith('/api'):
-            return
-        abort(404)
-    
-    # Portfolio domain
-    elif 'aungmyomyatzaw.com' in host:
-        if path == '/' or path.startswith('/projects/downloader'):
-            return
-        abort(404)
-    
-    abort(404)
 
 
 @app.route('/')
-def index():
-    if is_portfolio_domain():
-        return send_from_directory('static/portfolio', 'index.html')
-    elif is_tempmail_domain():
-        return send_from_directory('static/projects/tempmail', 'index.html')
-    abort(404)
+def portfolio_home():
+    """Portfolio as main landing page"""
+    return send_from_directory('static/portfolio', 'index.html')
+
+@app.route('/portfolio')
+def portfolio_redirect():
+    """Alias for portfolio"""
+    return send_from_directory('static/portfolio', 'index.html')
+
+@app.route('/portfolio/<path:filename>')
+def portfolio_static(filename):
+    """Serve portfolio static files"""
+    return send_from_directory('static/portfolio', filename)
 
 @app.route('/projects/downloader')
-def downloader():
-    if is_portfolio_domain():
-        return send_from_directory('static/projects/downloader', 'index.html')
-    abort(404)
-
-
-
-@app.route('/admin')
-def admin():
-    if is_tempmail_domain():
-        print("✅ Serving admin")
-        return send_from_directory('static/projects/tempmail', 'admin.html')
-    print("❌ Admin blocked on portfolio domain")
-    abort(404)
-
+def downloader_home():
+    """Downloader frontend"""
+    return send_from_directory('static/projects/downloader', 'index.html')
 
 @app.route('/projects/downloader/<path:filename>')
 def downloader_static(filename):
-    if is_portfolio_domain():
-        try:
-            return send_from_directory('static/projects/downloader', filename)
-        except:
-            abort(404)
-    abort(404)
-
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    if is_tempmail_domain():
-        try:
-            return send_from_directory('static/tempmail', filename)
-        except:
-            abort(404)
-    else:
-        try:
-            return send_from_directory('static/portfolio', filename)
-        except:
-            abort(404)
-
-
-# Block all other routes
-@app.errorhandler(404)
-def not_found(e):
-    return render_template('404.html'), 404
-
-
+    """Serve downloader static files"""
+    return send_from_directory('static/projects/downloader', filename)
 
 @app.route('/api/download', methods=['POST'])
 def proxy_to_lambda():
@@ -2578,6 +2511,37 @@ def admin_clear_sessions():
     except Exception as e:
         logger.error(f"âŒ Error clearing admin sessions: {e}")
         return jsonify({'error': str(e)}), 500
+
+def migrate_existing_emails():
+    """Migrate existing emails to ensure all emails for same address are grouped"""
+    try:
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Find emails with NULL session_token and try to associate them with sessions
+        c.execute('''
+            UPDATE emails e
+            SET session_token = (
+                SELECT s.session_token 
+                FROM sessions s 
+                WHERE s.email_address = e.recipient 
+                AND s.created_at <= e.received_at 
+                AND s.expires_at >= e.received_at
+                ORDER BY s.created_at DESC 
+                LIMIT 1
+            )
+            WHERE e.session_token IS NULL
+        ''')
+        
+        updated_count = c.rowcount
+        conn.commit()
+        conn.close()
+        
+        if updated_count > 0:
+            logger.info(f"✅ Migrated {updated_count} emails to proper session association")
+        
+    except Exception as e:
+        logger.warning(f"Migration note: {e}")
 
 
 
