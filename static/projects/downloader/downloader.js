@@ -16,10 +16,15 @@ const historyList = document.getElementById('historyList');
 const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 const clearHistorySection = document.getElementById('clearHistorySection');
 const historyCount = document.getElementById('historyCount');
+const newDownloadBtn = document.getElementById('newDownloadBtn');
+const downloadModal = document.getElementById('downloadModal');
+const closeModal = document.getElementById('closeModal');
 
 // Progress ring
 const progressRing = document.querySelector('.progress-ring-circle');
 const circumference = 2 * Math.PI * 36;
+
+let isDownloading = false;
 
 // Initialize progress ring
 progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
@@ -34,16 +39,18 @@ function setProgress(percent) {
     progressRing.style.strokeDashoffset = offset;
 }  
 
-
+// Smooth Sticky Header
 (function() {
     'use strict';
     
     const stickyHeader = document.getElementById('stickyHeader');
     const mainHeader = document.getElementById('mainHeader');
     
+    let ticking = false;
+    
     function updateStickyHeader() {
         const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-        const showSticky = scrollY > 30;
+        const showSticky = scrollY > 100;
         
         if(showSticky){
             stickyHeader.classList.add('is-visible');
@@ -52,13 +59,23 @@ function setProgress(percent) {
             stickyHeader.classList.remove('is-visible');
             mainHeader.classList.remove('is-compact');
         }
+        
+        ticking = false;
     }
 
-    window.addEventListener('scroll', updateStickyHeader, {passive: true});
-    updateStickyHeader(); // Initial check
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateStickyHeader);
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', requestTick, { passive: true });
+    window.addEventListener('load', updateStickyHeader);
+    window.addEventListener('resize', updateStickyHeader);
+    
+    updateStickyHeader();
 })();
-
-
 
 // Render download history
 function renderHistory() {
@@ -217,6 +234,46 @@ clearBtn.addEventListener('click', () => {
 // Clear history
 clearHistoryBtn.addEventListener('click', clearAllHistory);
 
+// New download button
+newDownloadBtn.addEventListener('click', () => {
+    resetToNewDownload();
+});
+
+
+// Handle Enter key in URL input
+urlInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault(); // Always prevent default to control behavior
+        
+        if (isDownloading) {
+            // Show modal if download is in progress
+            showDownloadModal();
+        } else if (urlInput.value.trim()) {
+            // Submit form if input has value and no download in progress
+            downloadForm.dispatchEvent(new Event('submit'));
+        } else {
+            // Clear form if input is empty
+            clearBtn.click();
+        }
+    }
+});
+
+// Close modal when close button is clicked
+closeModal.addEventListener('click', function() {
+    downloadModal.classList.add('hidden');
+});
+
+// Close modal when clicking outside
+downloadModal.addEventListener('click', function(e) {
+    if (e.target === downloadModal) {
+        downloadModal.classList.add('hidden');
+    }
+});
+
+function showDownloadModal() {
+    downloadModal.classList.remove('hidden');
+}
+
 // Form submission
 downloadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -252,17 +309,55 @@ function isValidUrl(string) {
     }
 }
 
-// Start download process
+// Add this function to check network status
+function checkNetwork() {
+    if (!navigator.onLine) {
+        showError('No internet connection. Please check your network.');
+        return false;
+    }
+    return true;
+}
+
+// Add this function to check network status
+function checkNetwork() {
+    if (!navigator.onLine) {
+        showError('No internet connection. Please check your network.');
+        return false;
+    }
+    return true;
+}
+
+// Update your handleDownload function
+async function handleDownload() {
+    const url = urlInput.value.trim();
+    const format = document.querySelector('input[name="format"]:checked').value;
+    
+    if (!url) {
+        showError('Please enter a valid URL');
+        return;
+    }
+    
+    if (!isValidUrl(url)) {
+        showError('Please enter a valid YouTube or TikTok URL');
+        return;
+    }
+    
+    if (!checkNetwork()) {
+        return;
+    }
+    
+    await startDownload(url, format);
+}
+
 async function startDownload(url, format) {
-    // Reset UI
+    isDownloading = true;
     resetUI();
     showLoading();
     
     try {
-        // Update progress
         setProgress(30);
         
-        const response = await fetch('/api/download', {  // ✅ Changed from API_URL
+        const response = await fetch('/api/download', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -272,35 +367,48 @@ async function startDownload(url, format) {
                 format: format
             })
         });
-
         
-        // Update progress
-        setProgress(70);
+        // Check if response is OK
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+        
+        // Check if response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Server returned non-JSON response');
+        }
         
         const data = await response.json();
         
-        if (!response.ok) {
-            throw new Error(data.error || 'Server error');
-        }
-        
-        if (data.success) {
-            // Complete progress
-            setProgress(100);
-            
-            // Add to history
-            addToHistory(data);
-            
-            // Simulate processing delay for better UX
-            setTimeout(() => {
-                showSuccess(data, url);
-            }, 1000);
-        } else {
+        if (!data.success) {
             throw new Error(data.error || 'Download failed');
         }
         
+        setProgress(70);
+        
+        // Complete progress
+        setProgress(100);
+        addToHistory(data);
+        
+        setTimeout(() => {
+            showSuccess(data, url);
+        }, 1000);
+        
     } catch (error) {
+        console.error('Download error:', error);
         showError(error.message);
     }
+}
+// Reset to new download
+function resetToNewDownload() {
+    resetUI();
+    urlInput.value = '';
+    urlInput.focus();
+    
+    // Reset format selection to default
+    document.querySelector('#format-mp4').checked = true;
+    document.querySelector('#format-mp4').dispatchEvent(new Event('change'));
 }
 
 // UI Functions
@@ -309,6 +417,7 @@ function resetUI() {
     errorResult.classList.add('hidden');
     loading.classList.add('hidden');
     downloadBtn.disabled = false;
+    isDownloading = false;
     
     // Reset progress
     setProgress(0);
@@ -350,11 +459,9 @@ function showLoading() {
 }
 
 function showSuccess(data, originalUrl) {
+    isDownloading = false;
     loading.classList.add('hidden');
     successResult.classList.remove('hidden');
-    
-    // Clear input for next download
-    urlInput.value = '';
     
     // Use the actual video title from API or fallback
     const videoTitle = data.title || 'Video Download';
@@ -446,6 +553,7 @@ function generateYouTubeThumbnail(url) {
 }
 
 function showError(message) {
+    isDownloading = false;
     loading.classList.add('hidden');
     errorResult.classList.remove('hidden');
     errorMessage.textContent = message;
@@ -498,10 +606,5 @@ document.querySelector('#format-mp4').dispatchEvent(new Event('change'));
 // Initialize history
 renderHistory();
 
-// Initialize
-
+// Initialize UI
 resetUI();
-
-
-
-
